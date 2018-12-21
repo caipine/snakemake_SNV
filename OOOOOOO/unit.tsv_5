@@ -1,0 +1,9 @@
+sample	unit	platform	fq1	fq2
+BCC1-control	lane1	ILLUMINA	SRA/fastqs/SRR1374314_1.fastq.gz	SRA/fastqs/SRR1374314_2.fastq.gz
+BCC1-tumor	lane2	ILLUMINA	SRA/fastqs/SRR1374315_1.fastq.gz	SRA/fastqs/SRR1374315_2.fastq.gz
+BCC2-tumor	lane3	ILLUMINA	SRA/fastqs/SRR1374316_1.fastq.gz	SRA/fastqs/SRR1374316_2.fastq.gz
+BCC2_3-control	lane4	ILLUMINA	SRA/fastqs/SRR1374317_1.fastq.gz	SRA/fastqs/SRR1374317_2.fastq.gz
+BCC3-tumor	lane5	ILLUMINA	SRA/fastqs/SRR1374318_1.fastq.gz	SRA/fastqs/SRR1374318_2.fastq.gz
+BCC4-tumor	lane6	ILLUMINA	SRA/fastqs/SRR1374319_1.fastq.gz	SRA/fastqs/SRR1374319_2.fastq.gz
+BCC4_5-control	lane7	ILLUMINA	SRA/fastqs/SRR1374320_1.fastq.gz	SRA/fastqs/SRR1374320_2.fastq.gz
+BCC5-tumor	lane8	ILLUMINA	SRA/fastqs/SRR1374321_1.fastq.gz	SRA/fastqs/SRR1374321_2.fastq.gz

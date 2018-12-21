@@ -1,0 +1,44 @@
+include: "rules/common_A.smk"
+
+ALL_FASTQ   = []
+ALL_FASTQ   = expand("trimmed/{sample}-{unit}.fastq.gz",  sample = SAMPLES, unit = UNITS )
+print(ALL_FASTQ)
+
+TARGETS = []
+TARGETS.extend(ALL_FASTQ)
+
+
+rule trim_reads_se:
+    input:
+        get_fastq
+    output:
+        fastq=temp("trimmed/{sample}-{unit}.fastq.gz"),
+        qc="trimmed/{sample}-{unit}.qc.txt"
+    params:
+        "-a {} {}".format(config["adapter"], config["params"]["cutadapt"]["se"])
+    log:
+        "logs/cutadapt/{sample}-{unit}.log"
+    wrapper:
+        "0.17.4/bio/cutadapt/se"
+
+
+
+##### Target rules #####
+
+#rule all:
+#    input:
+#        "annotated/all.vcf.gz",
+#       "qc/multiqc.html",
+#        "tables/calls.tsv.gz",
+#        "plots/depths.svg",
+#        "plots/allele-freqs.svg"
+
+
+##### Modules #####
+
+#include: "rules/mapping_A.smk"
+#include: "rules/calling.smk"
+#include: "rules/filtering.smk"
+#include: "rules/stats.smk"
+#include: "rules/qc_2.smk"
+#include: "rules/annotation.smk"
