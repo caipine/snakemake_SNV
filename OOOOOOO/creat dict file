@@ -1,0 +1,1 @@
+samtools dict ucsc.hg19.fasta -o ucsc.hg19.dict
