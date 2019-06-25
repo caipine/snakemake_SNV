@@ -1,1 +1,7 @@
 samtools dict ucsc.hg19.fasta -o ucsc.hg19.dict
+
+
+vcf
+gunzip
+bgzip -c dbsnp_138.hg19.vcf > dbsnp_138.hg19.vcf.gz
+tabix -p vcf dbsnp_138.hg19.vcf.gz
