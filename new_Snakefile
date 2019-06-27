@@ -1,0 +1,45 @@
+include: "rules/common.smk"
+
+
+
+############################################
+ALL_TRIM = expand("trimmed/{sample}-{unit}.1.fastq.gz", sample = samples.index, unit = units["unit"])
+#ALL_ = expand( , sample = samples.index, unit = units["unit"])
+ALL_MAPPING = expand("mapped/{sample}-{unit}.sorted.bam", sample = samples.index, unit = units["unit"])
+ALL_DEDUP = expand("dedup/{sample}-{unit}.bam", sample = samples.index, unit = units["unit"])
+ALL_RECAL = expand("recal/{sample}-{unit}.bam", sample = samples.index, unit = units["unit"])
+ALL_RECAL_BAI = expand("recal/{sample}-{unit}.bam.bai", sample = samples.index, unit = units["unit"])
+ALL_call_variants = expand("called/{sample}.{contig}.g.vcf.gz",sample = samples.index, contig = contigs)
+ALL_combine_calls = expand("called/all.{contig}.g.vcf.gz", contig = contigs)
+ALL_genotype_variants = expand("genotyped/all.{contig}.vcf.gz", contig = contigs)
+ALL_merge_variants = expand("genotyped/all.vcf.gz", contig = contigs)
+
+
+TARGETS = []
+TARGETS.extend(ALL_TRIM)
+TARGETS.extend(ALL_MAPPING)
+TARGETS.extend(ALL_DEDUP)
+TARGETS.extend(ALL_RECAL)
+TARGETS.extend(ALL_RECAL_BAI)
+TARGETS.extend(ALL_call_variants)
+TARGETS.extend(ALL_combine_calls)
+TARGETS.extend(ALL_genotype_variants)
+TARGETS.extend(ALL_merge_variants)
+
+
+localrules: all
+rule all:
+     input: TARGETS
+#############################################
+#############################################
+
+
+############################################
+##### Modules #####
+
+include: "rules/mappingCQS.smk"
+include: "rules/calling.smk"
+#include: "rules/filtering.smk"
+#include: "rules/stats.smk"
+#include: "rules/qcX.smk"
+#include: "rules/annotation.smk"
