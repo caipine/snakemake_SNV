@@ -1,22 +1,6 @@
-conda install -c bioconda snpeff 
-snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg19 filtered/all.vcf.gz > annotated/all.vcf.gz
+https://software.broadinstitute.org/gatk/documentation/article?id=11136
+conda install -c bioconda gatk4=4.1.2.0=0
 
-conda install rust-bio-tools
-
-####################33
-bwa index chr19_chr19_KI270866v1_alt.fasta
-bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.sam
-bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.bam
-
-
-bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq | samtools sort -@8 -o output.bam
-samtools index output.bam
-
-
-
-
-conda install -c bioconda gatk4=4.1.0.0=0
-gatk412
 ########################
 gatk --java-options "-Xmx2g" Mutect2 \
 -R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta \
