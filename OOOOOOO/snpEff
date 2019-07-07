@@ -1,0 +1,17 @@
+conda install -c bioconda snpeff 
+snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg19 filtered/all.vcf.gz > annotated/all.vcf.gz
+
+conda install rust-bio-tools
+
+####################33
+bwa index chr19_chr19_KI270866v1_alt.fasta
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.sam
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.bam
+
+
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq | samtools sort -@8 -o output.bam
+samtools index output.bam
+
+
+
+
