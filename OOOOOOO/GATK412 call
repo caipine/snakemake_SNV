@@ -1,0 +1,83 @@
+conda install -c bioconda snpeff 
+snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg19 filtered/all.vcf.gz > annotated/all.vcf.gz
+
+conda install rust-bio-tools
+
+####################33
+bwa index chr19_chr19_KI270866v1_alt.fasta
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.sam
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.bam
+
+
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq | samtools sort -@8 -o output.bam
+samtools index output.bam
+
+
+
+
+conda install -c bioconda gatk4=4.1.0.0=0
+gatk412
+########################
+gatk --java-options "-Xmx2g" Mutect2 \
+-R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta \
+-I tumor.bam \
+-I normal.bam \
+-tumor HCC1143_tumor \
+-normal HCC1143_normal \
+-pon resources/chr17_m2pon.vcf.gz \
+--germline-resource resources/chr17_af-only-gnomad_grch38.vcf.gz \
+--af-of-alleles-not-in-resource 0.0000025 \
+--disable-read-filter MateOnSameContigOrNoMappedMateReadFilter \
+-L chr17plus.interval_list \
+-O 1_somatic_m2.vcf.gz \
+-bamout 2_tumor_normal_m2.bam 
+
+##*********************
+zcat 1_somatic_m2.vcf.gz | awk '$5 ~","'
+#############################################
+gatk Mutect2 \
+-R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta \
+-I HG00190.bam \
+-tumor HG00190 \
+--disable-read-filter MateOnSameContigOrNoMappedMateReadFilter \
+-L chr17plus.interval_list \
+-O 3_HG00190.vcf.gz
+
+gatk CreateSomaticPanelOfNormals \
+-vcfs 3_HG00190.vcf.gz \
+-vcfs 4_NA19771.vcf.gz \
+-vcfs 5_HG02759.vcf.gz \
+-O 6_threesamplepon.vcf.gz
+
+conda install -c bioconda gatk4=4.1.1.0=0
+conda install -c bioconda gatk4=4.1.1.0-0
+conda install -c bioconda gatk4=4.1.1.0
+################
+gatk GetPileupSummaries \
+-I tumor.bam \
+-V resources/chr17_small_exac_common_3_grch38.vcf.gz \
+-L chr17plus.interval_list \
+-O 7_tumor_getpileupsummaries.table 
+
+gatk CalculateContamination \
+-I 7_tumor_getpileupsummaries.table \
+-O 8_tumor_calculatecontamination.table
+
+
+
+gatk FilterMutectCalls \
+-R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta \
+-V 1_somatic_m2.vcf.gz \
+--contamination-table 8_tumor_calculatecontamination.table \
+-O 9_somatic_oncefiltered.vcf.gz
+
+gatk CollectSequencingArtifactMetrics \
+-I tumor.bam \
+-O 10_tumor_artifact \
+-R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta
+
+
+gatk FilterByOrientationBias \
+-V 9_somatic_oncefiltered.vcf.gz \
+-P 10_tumor_artifact.pre_adapter_detail_metrics \
+-O 11_somatic_twicefiltered.vcf.gz
