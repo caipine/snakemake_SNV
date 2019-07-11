@@ -1,5 +1,32 @@
 conda install -c bioconda snpeff 
-snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg19 filtered/all.vcf.gz > annotated/all.vcf.gz
+snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg38 filtered/all.vcf.gz > annotated/all.vcf.gz
+
+######################################
+snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg38 MCL40_9_somatic_oncefiltered.vcf.gz > annotated/all.vcf.gz
+cd annotated
+     bcftools view --apply-filters PASS --output-type u all.vcf.gz \
+     | rbt vcf-to-txt -g --fmt DP AD --info ANN  \
+     | bgzip -d  > test.txt
+grep "missense_variant"  test.txt >     missense_variant.txt
+ 
+ 
+ 
+ 
+ 
+bgzip -d  all.vcf.gz
+
+gatk VariantsToTable \
+     -V MCL40_9_somatic_oncefiltered.vcf \
+     -F CHROM -F POS -F TYPE -GF AD \
+     -O output.table
+     
+     
+     
+ 
+
+
+
+
 
 conda install rust-bio-tools
 
