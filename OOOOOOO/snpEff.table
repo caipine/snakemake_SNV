@@ -1,0 +1,120 @@
+conda install -c bioconda snpeff 
+#########################################
+mkdir snpeff
+mkdir annotated
+foreach s ( "`cat sampls`" )
+snpEff  -noStats -csvStats snpeff/1.${s}_ann.csv -Xmx6g hg38 ${s}_9_somatic_oncefiltered.vcf.gz > annotated/1.${s}_ann.vcf
+bcftools view -f PASS -i 'INFO/ANN ~ "missense_variant" ' --output-type v annotated/1.${s}_ann.vcf  > annotated/2.passed.miss.${s}_ann.vcf
+snpEff  -noStats -csvStats snpeff/2.passed.miss.${s}_ann.csv -Xmx6g hg38 annotated/2.passed.miss.${s}_ann.vcf >  annotated/3.passed.miss.${s}_ann.vcf
+grep -v '^#' annotated/3.passed.miss.${s}_ann.vcf  | awk -F" " '{print $1 " "  $2 " " $4 " " $5}' > annotated/table_${s}.txt
+end
+##########################################
+cd annotated
+R
+
+X <- t(data.frame(c("chr","0")))
+colnames(X) <- c("SNP","S")
+X<- X[0,]
+
+samples <- c("MCL40","MCL41","MCL42","MCL44","MCL49","MCL50","MCL51","MCL52","MCL53","MCL54")
+for (i in samples ) {
+file <- paste("table_", i, ".txt", sep="")
+
+X1<- read.table(file)   #X1 <- read.table("table_MCL51.txt")
+X2 <- data.frame(paste(X1$V1, X1$V2, sep = ":"))
+X2[,2] <- 1
+colnames(X2) <- c("SNP",i)
+X <- merge(X, X2, by="SNP", , all = TRUE)
+}
+head(X)
+X<- X[,c(1, 3:(length(samples)+2))]
+X[is.na(X)] <- 0
+X$sum <- rowSums( X[,2: (length(samples)+1)] )
+head(X)
+X <-X[order(X$sum),]
+tail(X)
+
+
+head(X0)
+X2<- X0[,c(1, 3:12)]
+head(X2)
+
+X2<- X0[,c(1, 3:12)
+X2[is.na(X2)] <- 0
+X2$sum <- rowSums( X2[,2:12] )
+df <-X2[order(X2$sum),]
+tail(df)
+
+
+
+
+
+
+
+
+
+
+java -Dsamjdk.use_async_io_read_samtools=false \
+     -Dsamjdk.use_async_io_write_samtools=true \
+     -Dsamjdk.use_async_io_write_tribble=false \
+     -Dsamjdk.compression_level=2 \
+     -jar /home/qcai1/miniconda3/share/gatk4-4.1.0.0-0/gatk-package-4.1.0.0-local.jar \
+     CollectSequencingArtifactMetrics \
+     -I called/MCL51.2_tumor_normal_m2.bam \
+     -O called/MCL51_10_tumor_artifact \
+     -R /home/qcai1/Downloads/hg/hg38/Homo_sapiens_assembly38.fasta
+
+
+
+java -Dsamjdk.use_async_io_read_samtools=false \
+     -Dsamjdk.use_async_io_write_samtools=true \
+     -Dsamjdk.use_async_io_write_tribble=false \
+     -Dsamjdk.compression_level=2 \
+     -jar /opt/tacc_mounts/home1/03988/qscai/miniconda3/share/gatk4-4.0.11.0-0/gatk-package-4.0.11.0-local.jar \
+     CollectSequencingArtifactMetrics \
+     -I called/MCL51.2_tumor_normal_m2.bam \
+     -O called/MCL51_10_tumor_artifact \
+     -R /scratch/03988/qscai/DNAs/hg38/Homo_sapiens_assembly38.fasta
+
+
+######################################
+snpEff  -noStats -csvStats snpeff/all.csv -Xmx6g hg38 MCL40_9_somatic_oncefiltered.vcf.gz > annotated/all.vcf.gz
+cd annotated
+     bcftools view --apply-filters PASS --output-type u all.vcf.gz \
+     | rbt vcf-to-txt -g --fmt DP AD --info ANN  \
+     | bgzip -d  > test.txt
+grep "missense_variant"  test.txt >     missense_variant.txt
+ 
+ 
+ 
+ 
+ 
+bgzip -d  all.vcf.gz
+
+gatk VariantsToTable \
+     -V MCL40_9_somatic_oncefiltered.vcf \
+     -F CHROM -F POS -F TYPE -GF AD \
+     -O output.table
+     
+     
+     
+ 
+
+
+
+
+
+conda install rust-bio-tools
+
+####################33
+bwa index chr19_chr19_KI270866v1_alt.fasta
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.sam
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq > 8017_bwamem.bam
+
+
+bwa mem hg38_mini_ref/chr19_chr19_KI270866v1_alt.fasta altalt.read1.fq altalt.read2.fq | samtools sort -@8 -o output.bam
+samtools index output.bam
+
+
+
+
