@@ -7,6 +7,8 @@ snpEff  -noStats -csvStats snpeff/1.${s}_ann.csv -Xmx6g hg38 ${s}_9_somatic_once
 bcftools view -f PASS -i 'INFO/ANN ~ "missense_variant" ' --output-type v annotated/1.${s}_ann.vcf  > annotated/2.passed.miss.${s}_ann.vcf
 snpEff  -noStats -csvStats snpeff/2.passed.miss.${s}_ann.csv -Xmx6g hg38 annotated/2.passed.miss.${s}_ann.vcf >  annotated/3.passed.miss.${s}_ann.vcf
 grep -v '^#' annotated/3.passed.miss.${s}_ann.vcf  | awk -F" " '{print $1 " "  $2 " " $4 " " $5}' > annotated/table_${s}.txt
+grep -v '^#' annotated/3.passed.miss.${s}_ann.vcf  | awk -F"ANN=" '{print $2 " " }' |  awk -F"|"   '{print $4 " " }' > annotated/table_${s}.gene
+paste annotated/table_${s}.txt annotated/table_${s}.gene > annotated/gene_table_${s}.txt
 end
 ##########################################
 cd annotated
@@ -18,10 +20,10 @@ X<- X[0,]
 
 samples <- c("MCL40","MCL41","MCL42","MCL44","MCL49","MCL50","MCL51","MCL52","MCL53","MCL54")
 for (i in samples ) {
-file <- paste("table_", i, ".txt", sep="")
+file <- paste("gene_table_", i, ".txt", sep="")
 
-X1<- read.table(file)   #X1 <- read.table("table_MCL51.txt")
-X2 <- data.frame(paste(X1$V1, X1$V2, sep = ":"))
+X1<- read.table(file)   #X1 <- read.table("gene_table_MCL51.txt")
+X2 <- data.frame(paste(X1$V1, X1$V2, X1$V5, sep = ":"))
 X2[,2] <- 1
 colnames(X2) <- c("SNP",i)
 X <- merge(X, X2, by="SNP", , all = TRUE)
@@ -31,21 +33,8 @@ X<- X[,c(1, 3:(length(samples)+2))]
 X[is.na(X)] <- 0
 X$sum <- rowSums( X[,2: (length(samples)+1)] )
 head(X)
-X <-X[order(X$sum),]
-tail(X)
-
-
-head(X0)
-X2<- X0[,c(1, 3:12)]
-head(X2)
-
-X2<- X0[,c(1, 3:12)
-X2[is.na(X2)] <- 0
-X2$sum <- rowSums( X2[,2:12] )
-df <-X2[order(X2$sum),]
-tail(df)
-
-
+X <-X[order(X$sum, decreasing = TRUE),]
+head(X)
 
 
 
