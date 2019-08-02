@@ -22,8 +22,8 @@ samples <- c("MCL40","MCL41","MCL42","MCL44","MCL49","MCL50","MCL51","MCL52","MC
 for (i in samples ) {
 file <- paste("gene_table_", i, ".txt", sep="")
 
-X1<- read.table(file)   #X1 <- read.table("gene_table_MCL51.txt")
-X2 <- data.frame(paste(X1$V1, X1$V2, X1$V5, sep = ":"))
+X1<- read.table(file, sep = " ")   #X1 <- read.table("gene_table_MCL51.txt")
+X2 <- data.frame(paste(X1$V1, X1$V2, X1$V5, X1$V6, X1$V7, sep = ":"))
 X2[,2] <- 1
 colnames(X2) <- c("SNP",i)
 X <- merge(X, X2, by="SNP", , all = TRUE)
