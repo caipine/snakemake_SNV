@@ -18,7 +18,10 @@ X <- t(data.frame(c("chr","0")))
 colnames(X) <- c("SNP","S")
 X<- X[0,]
 
-samples <- c("MCL40","MCL41","MCL42","MCL44","MCL49","MCL50","MCL51","MCL52","MCL53","MCL54")
+samples <- read.table("../sampls")[,1]
+#samples <- read.table("../sampls_no42")[,1]
+samples
+#samples <- c("MCL40","MCL41","MCL42","MCL44","MCL49","MCL50","MCL51","MCL52","MCL53","MCL54")
 for (i in samples ) {
 file <- paste("gene_table_", i, ".txt", sep="")
 
