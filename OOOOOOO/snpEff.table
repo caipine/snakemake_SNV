@@ -46,6 +46,29 @@ head(X)
 
 
 
+
+1.
+
+
+#########################################
+mkdir snpeff
+mkdir annotated
+foreach s ( "`cat sampls`" )
+snpEff  -noStats -csvStats snpeff/1.${s}_ann.csv -Xmx6g hg38 ${s}.1_somatic_m2.vcf.gz > annotated/1.${s}_ann.vcf
+bcftools view  -i 'INFO/ANN ~ "missense_variant" ' --output-type v annotated/1.${s}_ann.vcf  > annotated/2.passed.miss.${s}_ann.vcf
+snpEff  -noStats -csvStats snpeff/2.passed.miss.${s}_ann.csv -Xmx6g hg38 annotated/2.passed.miss.${s}_ann.vcf >  annotated/3.passed.miss.${s}_ann.vcf
+grep -v '^#' annotated/3.passed.miss.${s}_ann.vcf  | awk -F" " '{print $1 " "  $2 " " $4 " " $5}' > annotated/table_${s}.txt
+grep -v '^#' annotated/3.passed.miss.${s}_ann.vcf  | awk -F"ANN=" '{print $2 " " }' |  awk -F"|"   '{print $4 " " $10 " " $11 " " }' > annotated/table_${s}.gene
+paste annotated/table_${s}.txt annotated/table_${s}.gene > annotated/gene_table_${s}.txt
+end
+##########################################
+
+
+
+
+
+
+
 java -Dsamjdk.use_async_io_read_samtools=false \
      -Dsamjdk.use_async_io_write_samtools=true \
      -Dsamjdk.use_async_io_write_tribble=false \
